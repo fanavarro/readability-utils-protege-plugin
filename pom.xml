@@ -35,6 +35,14 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>${commons-lang3.version}</version>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/junit/junit -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.13.2</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -84,7 +92,8 @@
 							javax.*;resolution:=optional,
 							*
 						</Import-Package>
-						<Include-Resource>src/main/resources/plugin.xml, {maven-dependencies}, {maven-resources}</Include-Resource>
+						<Include-Resource>src/main/resources/plugin.xml,
+							{maven-dependencies}, {maven-resources}</Include-Resource>
 					</instructions>
 				</configuration>
 			</plugin>

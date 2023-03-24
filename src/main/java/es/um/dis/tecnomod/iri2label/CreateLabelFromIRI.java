@@ -26,24 +26,6 @@ public class CreateLabelFromIRI extends ProtegeOWLAction {
 	public void dispose() throws Exception {
 	}
 
-	public void actionPerformedBak(ActionEvent event) {
-		OWLOntology owlOntology = this.getOWLWorkspace().getOWLModelManager().getActiveOntology();
-		OWLEntity owlEntity = this.getOWLWorkspace().getOWLSelectionModel().getSelectedEntity();
-		
-		String label = stringUtils.iri2string(owlEntity.getIRI());
-		String lang = null;
-		
-		
-		
-		String message = String.format("The entity %s is going to be labelled as %s.", owlEntity.getIRI().toQuotedString(), label);
-
-		int result = JOptionPane.showConfirmDialog(getOWLWorkspace(), message, "Create label",
-	               JOptionPane.YES_NO_OPTION,
-	               JOptionPane.QUESTION_MESSAGE);
-		if(result == JOptionPane.YES_OPTION){
-			this.ontologyUtils.addRDFSLabel(owlOntology, owlEntity.getIRI(), label, lang);
-         }
-	}
 	
 	@Override
 	public void actionPerformed(ActionEvent event) {
@@ -55,12 +37,11 @@ public class CreateLabelFromIRI extends ProtegeOWLAction {
 		
 		
 		String message = String.format("The entity %s is going to be labelled as %s.", owlEntity.getIRI().toQuotedString(), label);
-		//JOptionPane.showConfirmDialog(getOWLWorkspace(), message);
 		int result = JOptionPane.showConfirmDialog(getOWLWorkspace(), message, "Create label",
 	               JOptionPane.YES_NO_OPTION,
 	               JOptionPane.QUESTION_MESSAGE);
 		if(result == JOptionPane.YES_OPTION){
 			this.ontologyUtils.addRDFSLabel(owlOntology, owlEntity.getIRI(), label, lang);
-         }
+        }
 	}
 }

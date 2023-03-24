@@ -19,6 +19,22 @@
         <class value="es.um.dis.tecnomod.iri2label.CreateLabelFromIRIBulk"/>
         <editorKitId value="any"/>
     </extension>
+    
+    <extension id="import_annotations" point="org.protege.editor.core.application.EditorKitMenuAction">
+        <name value="Import annotations"/>
+        <path value="org.protege.editor.owl.menu.tools/SlotG-C"/>
+        <toolTip value="Import annotations into the selected entity by extracting them through its IRI."/>
+        <class value="es.um.dis.tecnomod.ontology_annotation_enrichment.ImportAnnotations"/>
+        <editorKitId value="any"/>
+    </extension>
+    
+    <extension id="import_annotations_bulk" point="org.protege.editor.core.application.EditorKitMenuAction">
+        <name value="Import annotations (bulk)"/>
+        <path value="org.protege.editor.owl.menu.tools/SlotG-D"/>
+        <toolTip value="Import annotations for all entities by accessing their IRIs, one by one."/>
+        <class value="es.um.dis.tecnomod.ontology_annotation_enrichment.ImportAnnotationsBulk"/>
+        <editorKitId value="any"/>
+    </extension>
 
     
 </plugin>
