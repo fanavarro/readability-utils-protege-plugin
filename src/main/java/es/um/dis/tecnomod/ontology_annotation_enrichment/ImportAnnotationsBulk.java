@@ -5,7 +5,6 @@ import java.awt.event.ActionEvent;
 import javax.swing.JOptionPane;
 
 import org.protege.editor.owl.ui.action.ProtegeOWLAction;
-import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 public class ImportAnnotationsBulk extends ProtegeOWLAction {
