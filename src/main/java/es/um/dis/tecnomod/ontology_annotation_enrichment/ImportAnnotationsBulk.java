@@ -2,10 +2,13 @@ package es.um.dis.tecnomod.ontology_annotation_enrichment;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.JOptionPane;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
 
 import org.protege.editor.owl.ui.action.ProtegeOWLAction;
 import org.semanticweb.owlapi.model.OWLOntology;
+
+import es.um.dis.tecnomod.ontology_annotation_enrichment.components.ImportAnnotationsWindow;
 
 public class ImportAnnotationsBulk extends ProtegeOWLAction {
 
@@ -26,15 +29,29 @@ public class ImportAnnotationsBulk extends ProtegeOWLAction {
 
 	@Override
 	public void actionPerformed(ActionEvent event) {
-		OWLOntology owlOntology = this.getOWLWorkspace().getOWLModelManager().getActiveOntology();	
-		String message = "All the entities in the ontology are going to be enriched by extracting the annotation assertion axioms from their IRI. This task is performed entity by entity and could be time-consuming. Continue?";
-		int result = JOptionPane.showConfirmDialog(getOWLWorkspace(), message, "Import annotations",
-	               JOptionPane.YES_NO_OPTION,
-	               JOptionPane.QUESTION_MESSAGE);
-		if(result == JOptionPane.YES_OPTION){
-			AnnotationEnricher annotationEnricher = new AnnotationEnricher(owlOntology);
-			annotationEnricher.enrichOntology();
-        }
+		OWLOntology owlOntology = this.getOWLWorkspace().getOWLModelManager().getActiveOntology();
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+            	createAndShowImportAnnotationsWindow(owlOntology);
+            }
+        });
+		 
 	}
+	
+	private void createAndShowImportAnnotationsWindow(OWLOntology owlOntology) {
+        //Create and set up the window.
+        JFrame frame = new JFrame("Import annotations (bulk)");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        //Create and set up the content pane.
+        JComponent newContentPane = new ImportAnnotationsWindow(owlOntology);
+        newContentPane.setOpaque(true); //content panes must be opaque
+        frame.setContentPane(newContentPane);
+
+        //Display the window.
+        frame.pack();
+        frame.setSize(800,500);
+        frame.setVisible(true);
+    }
 
 }
