@@ -30,11 +30,12 @@ public class ImportAnnotationsBulk extends ProtegeOWLAction {
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		OWLOntology owlOntology = this.getOWLWorkspace().getOWLModelManager().getActiveOntology();
-		javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-            	createAndShowImportAnnotationsWindow(owlOntology);
-            }
-        });
+		createAndShowImportAnnotationsWindow(owlOntology);
+//		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+//            public void run() {
+//            	createAndShowImportAnnotationsWindow(owlOntology);
+//            }
+//        });
 		 
 	}
 	

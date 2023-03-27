@@ -5,11 +5,18 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EventListener;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
@@ -19,7 +26,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import es.um.dis.tecnomod.ontology_annotation_enrichment.AnnotationEnricher;
 
 public class ImportAnnotationsWindow extends JPanel
-                             implements ActionListener {
+                             implements ActionListener, PropertyChangeListener {
 
     /**
 	 * 
@@ -29,22 +36,31 @@ public class ImportAnnotationsWindow extends JPanel
 	private static final int LOG_COLUMNS = 20;
 	private static final int MESSAGE_ROWS= 2;
 	private static final int MESSAGE_COLUMNS = 20;
-	private ImportAnnotationsProgressBar progressBar;
+	private JProgressBar progressBar;
     private JButton startButton;
-    private ImportAnnotationsProgressLog taskOutput;
+    private JTextArea taskOutput;
     private Task task;
     private OWLOntology ontology;
     
 
-    class Task extends SwingWorker<Void, Void> {    	
+    class Task extends SwingWorker<Void, Void> {
+    	private List<EventListener> listeners;
+    	
+    	public Task(List<EventListener> listeners) {
+    		this.listeners = listeners;
+    	}
+    	public Task() {
+    		this.listeners = new ArrayList<>();
+    	}
         /*
          * Main task. Executed in background thread.
          */
         @Override
         public Void doInBackground() {
             AnnotationEnricher annotationEnricher = new AnnotationEnricher(ontology);
-            annotationEnricher.addListener(progressBar);
-            annotationEnricher.addListener(taskOutput);
+            for(EventListener listener : listeners) {
+            	annotationEnricher.addListener(listener);
+            }
 			annotationEnricher.enrichOntology();
             return null;
         }
@@ -78,11 +94,11 @@ public class ImportAnnotationsWindow extends JPanel
         startButton.setActionCommand("start");
         startButton.addActionListener(this);
 
-        progressBar = new ImportAnnotationsProgressBar(0, 100);
+        progressBar = new JProgressBar(0, 100);
         progressBar.setValue(0);
         progressBar.setStringPainted(true);
 
-        taskOutput = new ImportAnnotationsProgressLog(LOG_ROWS, LOG_COLUMNS);
+        taskOutput = new JTextArea(LOG_ROWS, LOG_COLUMNS);
         taskOutput.setMargin(new Insets(5,5,5,5));
         taskOutput.setEditable(false);
 
@@ -97,16 +113,35 @@ public class ImportAnnotationsWindow extends JPanel
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
     }
+    
+    /**
+     * Invoked when task's progress property changes.
+     */
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+    	if (evt instanceof ImportAnnotationProgressEvent) {
+			ImportAnnotationProgressEvent progress = (ImportAnnotationProgressEvent)evt;
+			if (progress.getPercentageComplete() != null){
+				progressBar.setValue(progress.getPercentageComplete());
+			}
+			if (progress.getMessage() != null && !progress.getMessage().isEmpty()) {
+				taskOutput.append(progress.getMessage());
+				taskOutput.append("\n");
+				taskOutput.setCaretPosition(taskOutput.getDocument().getLength());
+			}
+		}
+    }
 
     /**
      * Invoked when the user presses the start button.
      */
+    @Override
     public void actionPerformed(ActionEvent evt) {
         startButton.setEnabled(false);
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         //Instances of javax.swing.SwingWorker are not reusuable, so
         //we create new instances as needed.
-        task = new Task();
+        task = new Task(Arrays.asList(this));
         task.execute();
     }
 }

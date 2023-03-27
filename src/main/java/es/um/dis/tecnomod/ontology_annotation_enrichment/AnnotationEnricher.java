@@ -1,10 +1,12 @@
 package es.um.dis.tecnomod.ontology_annotation_enrichment;
 
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.EventListener;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,17 +23,18 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
+import es.um.dis.tecnomod.ontology_annotation_enrichment.components.ImportAnnotationProgressBean;
 import es.um.dis.tecnomod.ontology_annotation_enrichment.components.ImportAnnotationProgressEvent;
-import es.um.dis.tecnomod.ontology_annotation_enrichment.components.ImportAnnotationProgressListener;
 
 
 public class AnnotationEnricher {
 	private final static Logger LOGGER = Logger.getLogger(AnnotationEnricher.class.getName());
 	private static final float MAX_PROGRESS_WITHOUT_COMPLETE = 97;
 	
-	private List<ImportAnnotationProgressListener> listeners;
+	private List<EventListener> listeners;
 	private float progress;
 	private float progressPerEntity;
+	private ImportAnnotationProgressBean lastProgressNotification;
 	
 	private OWLOntologyManager ontologyManager;
 	private OWLOntology ontology;
@@ -39,17 +42,19 @@ public class AnnotationEnricher {
 	public AnnotationEnricher(OWLOntology ontology) {
 		this.ontology = ontology;
 		this.ontologyManager = ontology.getOWLOntologyManager();
-		this.listeners = new ArrayList<ImportAnnotationProgressListener>();
+		this.listeners = new ArrayList<EventListener>();
 		this.progress = 0;
 		this.progressPerEntity = this.getProgressPerEntity();
+		this.lastProgressNotification = null;
 	}
 	
 	public AnnotationEnricher(InputStream inputStream) throws OWLOntologyCreationException {
 		this.ontologyManager = OWLManager.createOWLOntologyManager();
 		this.ontology = this.ontologyManager.loadOntologyFromOntologyDocument(inputStream);
-		this.listeners = new ArrayList<ImportAnnotationProgressListener>();
+		this.listeners = new ArrayList<EventListener>();
 		this.progress = 0;
 		this.progressPerEntity = this.getProgressPerEntity();
+		this.lastProgressNotification = null;
 	}
 	
 	public AnnotationEnricher(File ontologyFile) throws OWLOntologyCreationException, FileNotFoundException {
@@ -59,9 +64,10 @@ public class AnnotationEnricher {
 	public AnnotationEnricher(IRI ontologyIRI) throws OWLOntologyCreationException {
 		this.ontologyManager = OWLManager.createOWLOntologyManager();
 		this.ontology = this.ontologyManager.loadOntologyFromOntologyDocument(ontologyIRI);
-		this.listeners = new ArrayList<ImportAnnotationProgressListener>();
+		this.listeners = new ArrayList<EventListener>();
 		this.progress = 0;
 		this.progressPerEntity = this.getProgressPerEntity();
+		this.lastProgressNotification = null;
 	}
 	private float getProgressPerEntity() {
 		int totalEntities = 0;
@@ -74,10 +80,10 @@ public class AnnotationEnricher {
 		return (100.0f/(float)totalEntities);
 	}
 	
-	public void addListener(ImportAnnotationProgressListener listener){
+	public void addListener(EventListener listener){
 		this.listeners.add(listener);
 	}
-	public void removeListener(ImportAnnotationProgressListener listener){
+	public void removeListener(EventListener listener){
 		this.listeners.remove(listener);
 	}
 	public void cleanListeners(){
@@ -85,10 +91,14 @@ public class AnnotationEnricher {
 	}
 	
 	public void notifyListeners(int progress, String message) {
-		ImportAnnotationProgressEvent event = new ImportAnnotationProgressEvent(progress, message);
-		for (ImportAnnotationProgressListener listener : this.listeners) {
-			listener.onImportAnnotationProgress(event);
+		ImportAnnotationProgressBean eventContent = new ImportAnnotationProgressBean(progress, message);
+		ImportAnnotationProgressEvent event = new ImportAnnotationProgressEvent(this, this.lastProgressNotification, eventContent);
+		for (EventListener listener : this.listeners) {
+			if (listener instanceof PropertyChangeListener) {
+				((PropertyChangeListener)listener).propertyChange(event);
+			}
 		}
+		this.lastProgressNotification = eventContent;
 	}
 	
 	public void enrichOntology() {

@@ -86,7 +86,7 @@
 						<Bundle-Vendor>The Protege Development Team</Bundle-Vendor>
 						<Import-Package>
 							org.protege.editor.owl.*;version="5.0.0",
-							org.semanticweb.owlapi.*;version="[4.1.3,5.0.0)",
+							org.semanticweb.owlapi.*;version="[4.5.7,5.0.0)",
 							junit.framework;resolution:=optional,
 							org.apache.commons.lang3;version="3.12.0"
 							javax.*;resolution:=optional,
