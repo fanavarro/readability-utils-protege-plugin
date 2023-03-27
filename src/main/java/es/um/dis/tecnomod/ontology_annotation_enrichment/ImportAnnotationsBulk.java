@@ -50,7 +50,7 @@ public class ImportAnnotationsBulk extends ProtegeOWLAction {
 
         //Display the window.
         frame.pack();
-        frame.setSize(800,500);
+        frame.setSize(800,600);
         frame.setVisible(true);
     }
 

@@ -27,6 +27,7 @@ import es.um.dis.tecnomod.ontology_annotation_enrichment.components.ImportAnnota
 
 public class AnnotationEnricher {
 	private final static Logger LOGGER = Logger.getLogger(AnnotationEnricher.class.getName());
+	private static final float MAX_PROGRESS_WITHOUT_COMPLETE = 97;
 	
 	private List<ImportAnnotationProgressListener> listeners;
 	private float progress;
@@ -175,7 +176,8 @@ public class AnnotationEnricher {
 			if (currentEntityAxioms != null && !currentEntityAxioms.isEmpty()) {
 				axiomsToAdd.addAll(currentEntityAxioms);
 			}
-			this.progress = this.progress + this.progressPerEntity;
+			Math.min(this.progress + this.progressPerEntity, MAX_PROGRESS_WITHOUT_COMPLETE);
+			this.progress = Math.min(this.progress + this.progressPerEntity, MAX_PROGRESS_WITHOUT_COMPLETE);
 			this.notifyListeners(Math.round(this.progress), null);
 		});
 		return axiomsToAdd;
