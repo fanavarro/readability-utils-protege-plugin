@@ -16,16 +16,16 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
 
-import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import es.um.dis.tecnomod.ontology_annotation_enrichment.AnnotationEnricher;
 
-public class ImportAnnotationsWindow extends JPanel
+public class ImportAnnotationsBulkWindow extends JPanel
                              implements ActionListener, PropertyChangeListener {
 
     /**
@@ -36,11 +36,11 @@ public class ImportAnnotationsWindow extends JPanel
 	private static final int LOG_COLUMNS = 20;
 	private static final int MESSAGE_ROWS= 2;
 	private static final int MESSAGE_COLUMNS = 20;
+	private JProgressBar progressBar;
     private JButton startButton;
     private JTextArea taskOutput;
     private Task task;
     private OWLOntology ontology;
-    private OWLEntity entity;
     
 
     class Task extends SwingWorker<Void, Void> {
@@ -61,7 +61,7 @@ public class ImportAnnotationsWindow extends JPanel
             for(EventListener listener : listeners) {
             	annotationEnricher.addListener(listener);
             }
-			annotationEnricher.enrichEntity(entity);
+			annotationEnricher.enrichOntology();
             return null;
         }
 
@@ -71,20 +71,18 @@ public class ImportAnnotationsWindow extends JPanel
         @Override
         public void done() {
             //Toolkit.getDefaultToolkit().beep();
-        	taskOutput.append("Done.");
             startButton.setEnabled(true);
             setCursor(null); //turn off the wait cursor
         }
     }
 
-    public ImportAnnotationsWindow(OWLOntology ontology, OWLEntity entity) {
+    public ImportAnnotationsBulkWindow(OWLOntology ontology) {
         //super(new BorderLayout());
     	//super(new BoxLayout ());
     	super();
         this.ontology = ontology;
-        this.entity = entity;
         //Create the UI.
-        JTextArea textMessage = new JTextArea(String.format("The entity %s is going to be enriched by extracting the annotation assertion axioms from its IRI. Press start to continue.", entity.getIRI().toQuotedString()), MESSAGE_ROWS, MESSAGE_COLUMNS);
+        JTextArea textMessage = new JTextArea("All the entities in the ontology are going to be enriched by extracting the annotation assertion axioms from their IRI. This task is performed entity by entity and could be time-consuming. Press start to continue.", MESSAGE_ROWS, MESSAGE_COLUMNS);
         textMessage.setFont(new Font("Serif", Font.BOLD, 15));
         textMessage.setLineWrap(true);
         textMessage.setWrapStyleWord(true);
@@ -96,12 +94,17 @@ public class ImportAnnotationsWindow extends JPanel
         startButton.setActionCommand("start");
         startButton.addActionListener(this);
 
+        progressBar = new JProgressBar(0, 100);
+        progressBar.setValue(0);
+        progressBar.setStringPainted(true);
+
         taskOutput = new JTextArea(LOG_ROWS, LOG_COLUMNS);
         taskOutput.setMargin(new Insets(5,5,5,5));
         taskOutput.setEditable(false);
 
         JPanel panel = new JPanel();
         panel.add(startButton);
+        panel.add(progressBar);
         
         setLayout (new BoxLayout (this, BoxLayout.Y_AXIS));    
         add(new JScrollPane(textMessage));
@@ -118,6 +121,9 @@ public class ImportAnnotationsWindow extends JPanel
     public void propertyChange(PropertyChangeEvent evt) {
     	if (evt instanceof ImportAnnotationProgressEvent) {
 			ImportAnnotationProgressEvent progress = (ImportAnnotationProgressEvent)evt;
+			if (progress.getPercentageComplete() != null){
+				progressBar.setValue(progress.getPercentageComplete());
+			}
 			if (progress.getMessage() != null && !progress.getMessage().isEmpty()) {
 				taskOutput.append(progress.getMessage());
 				taskOutput.append("\n");
@@ -132,8 +138,9 @@ public class ImportAnnotationsWindow extends JPanel
     @Override
     public void actionPerformed(ActionEvent evt) {
         startButton.setEnabled(false);
-        this.taskOutput.append(String.format("Enriching %s\n", this.entity.getIRI().toQuotedString()));
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        //Instances of javax.swing.SwingWorker are not reusuable, so
+        //we create new instances as needed.
         task = new Task(Arrays.asList(this));
         task.execute();
     }

@@ -8,7 +8,7 @@ import javax.swing.JFrame;
 import org.protege.editor.owl.ui.action.ProtegeOWLAction;
 import org.semanticweb.owlapi.model.OWLOntology;
 
-import es.um.dis.tecnomod.ontology_annotation_enrichment.components.ImportAnnotationsWindow;
+import es.um.dis.tecnomod.ontology_annotation_enrichment.components.ImportAnnotationsBulkWindow;
 
 public class ImportAnnotationsBulk extends ProtegeOWLAction {
 
@@ -30,7 +30,7 @@ public class ImportAnnotationsBulk extends ProtegeOWLAction {
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		OWLOntology owlOntology = this.getOWLWorkspace().getOWLModelManager().getActiveOntology();
-		createAndShowImportAnnotationsWindow(owlOntology);
+		createAndShowImportAnnotationsBulkWindow(owlOntology);
 //		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 //            public void run() {
 //            	createAndShowImportAnnotationsWindow(owlOntology);
@@ -39,13 +39,13 @@ public class ImportAnnotationsBulk extends ProtegeOWLAction {
 		 
 	}
 	
-	private void createAndShowImportAnnotationsWindow(OWLOntology owlOntology) {
+	private void createAndShowImportAnnotationsBulkWindow(OWLOntology owlOntology) {
         //Create and set up the window.
         JFrame frame = new JFrame("Import annotations (bulk)");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         //Create and set up the content pane.
-        JComponent newContentPane = new ImportAnnotationsWindow(owlOntology);
+        JComponent newContentPane = new ImportAnnotationsBulkWindow(owlOntology);
         newContentPane.setOpaque(true); //content panes must be opaque
         frame.setContentPane(newContentPane);
 
