@@ -105,23 +105,48 @@ public class AnnotationEnricher {
 		
 		this.notifyListeners(Math.round(this.progress), "Enriching classes");
 		Set<OWLAxiom> classAxioms = this.getAnnotationAssertionAxiomsForOWLClasses();
-		this.ontologyManager.addAxioms(this.ontology, classAxioms);
+		//this.ontologyManager.addAxioms(this.ontology, classAxioms);
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				ontologyManager.addAxioms(ontology, classAxioms);
+			}
+		});
 		
 		this.notifyListeners(Math.round(this.progress), "Enriching object properties");
 		Set<OWLAxiom> objectPropertyAxioms = this.getAnnotationAssertionAxiomsForOWLObjectProperties();
-		this.ontologyManager.addAxioms(this.ontology, objectPropertyAxioms);
+		//this.ontologyManager.addAxioms(this.ontology, objectPropertyAxioms);
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				ontologyManager.addAxioms(ontology, objectPropertyAxioms);
+			}
+		});
 		
 		this.notifyListeners(Math.round(this.progress), "Enriching data properties");
 		Set<OWLAxiom> dataPropertyAxioms = this.getAnnotationAssertionAxiomsForOWLDataProperties();
-		this.ontologyManager.addAxioms(this.ontology, dataPropertyAxioms);
+		//this.ontologyManager.addAxioms(this.ontology, dataPropertyAxioms);
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				ontologyManager.addAxioms(ontology, dataPropertyAxioms);
+			}
+		});
 		
 		this.notifyListeners(Math.round(this.progress), "Enriching individuals");
 		Set<OWLAxiom> individualAxioms = this.getAnnotationAssertionAxiomsForOWLIndividuals();
-		this.ontologyManager.addAxioms(this.ontology, individualAxioms);
+		//this.ontologyManager.addAxioms(this.ontology, individualAxioms);
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				ontologyManager.addAxioms(ontology, individualAxioms);
+			}
+		});
 		
 		this.notifyListeners(Math.round(this.progress), "Enriching annotation properties");
 		Set<OWLAxiom> annotationPropertyAxioms = this.getAnnotationAssertionAxiomsForOWLAnnotationProperties();
-		this.ontologyManager.addAxioms(this.ontology, annotationPropertyAxioms);
+		//this.ontologyManager.addAxioms(this.ontology, annotationPropertyAxioms);
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				ontologyManager.addAxioms(ontology, annotationPropertyAxioms);
+			}
+		});
 		
 		int totalAxioms = classAxioms.size() + objectPropertyAxioms.size() + dataPropertyAxioms.size() + individualAxioms.size() + annotationPropertyAxioms.size();
 		this.progress = 100;
@@ -137,7 +162,12 @@ public class AnnotationEnricher {
 	public void enrichEntity(OWLEntity entity) {
 		
 		Set<OWLAxiom> annotationAssertionAxioms = this.getAnnotationAssertionAxiomsForOWLEntity(entity);
-		this.ontologyManager.addAxioms(this.ontology, annotationAssertionAxioms);
+		//this.ontologyManager.addAxioms(this.ontology, annotationAssertionAxioms);
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				ontologyManager.addAxioms(ontology, annotationAssertionAxioms);
+			}
+		});
 	}
 	
 	public Set<OWLAxiom> getAnnotationAssertionAxiomsForOWLEntity(OWLEntity entity) {
