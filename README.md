@@ -25,7 +25,12 @@ This action tries to retrieve annotations assertion axioms for the selected enti
 A bulk version of this tool is available to enrich all the entities of the ontology; however, this can be a time-consuming task.
 
 
-## Build and install
+## Install
+In order to use the plugin from the last release, you can copy the jar file located [here](https://github.com/fanavarro/readability-utils-protege-plugin/releases/download/v1.0.0/readability-utils-protege-plugin-1.0.0.jar) into the plugin folder of your protege installation. After this, start protege and the functionality of the plugin should be visible under the *tool* section in the toolbar.
+
+
+## Build
+If you want to use a jar file compiled from the source code, follow the next steps (you will need Git, Java and Maven):
 
 1. Get a copy of the code:
 
