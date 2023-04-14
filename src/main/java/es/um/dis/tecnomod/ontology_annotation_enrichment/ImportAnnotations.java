@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 import org.protege.editor.owl.ui.action.ProtegeOWLAction;
 import org.semanticweb.owlapi.model.OWLEntity;
@@ -31,14 +32,18 @@ public class ImportAnnotations extends ProtegeOWLAction {
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		OWLOntology owlOntology = this.getOWLWorkspace().getOWLModelManager().getActiveOntology();
-		OWLEntity owlEntity = this.getOWLWorkspace().getOWLSelectionModel().getSelectedEntity();	
-		createAndShowImportAnnotationsWindow(owlOntology, owlEntity);
+		OWLEntity owlEntity = this.getOWLWorkspace().getOWLSelectionModel().getSelectedEntity();
+		if (owlEntity == null) {
+			JOptionPane.showMessageDialog(getOWLWorkspace(), "Please, select an ontology entity.");
+		} else {
+			createAndShowImportAnnotationsWindow(owlOntology, owlEntity);
+		}
 		 
 	}
 	
 	private void createAndShowImportAnnotationsWindow(OWLOntology owlOntology, OWLEntity entity) {
         //Create and set up the window.
-        JFrame frame = new JFrame("Import annotations (bulk)");
+        JFrame frame = new JFrame("Import annotations");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         //Create and set up the content pane.

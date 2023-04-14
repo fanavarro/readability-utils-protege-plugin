@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -38,6 +39,10 @@ public class AnnotationEnricher {
 	
 	private OWLOntologyManager ontologyManager;
 	private OWLOntology ontology;
+	
+	private Optional<OWLOntology> externalOntology;
+	
+	
 
 	public AnnotationEnricher(OWLOntology ontology) {
 		this.ontology = ontology;
@@ -46,6 +51,7 @@ public class AnnotationEnricher {
 		this.progress = 0;
 		this.progressPerEntity = this.getProgressPerEntity();
 		this.lastProgressNotification = null;
+		this.externalOntology = Optional.empty();
 	}
 	
 	public AnnotationEnricher(InputStream inputStream) throws OWLOntologyCreationException {
@@ -55,10 +61,12 @@ public class AnnotationEnricher {
 		this.progress = 0;
 		this.progressPerEntity = this.getProgressPerEntity();
 		this.lastProgressNotification = null;
+		this.externalOntology = Optional.empty();
 	}
 	
 	public AnnotationEnricher(File ontologyFile) throws OWLOntologyCreationException, FileNotFoundException {
 		this(new FileInputStream(ontologyFile));
+		this.externalOntology = Optional.empty();
 	}
 	
 	public AnnotationEnricher(IRI ontologyIRI) throws OWLOntologyCreationException {
@@ -68,7 +76,28 @@ public class AnnotationEnricher {
 		this.progress = 0;
 		this.progressPerEntity = this.getProgressPerEntity();
 		this.lastProgressNotification = null;
+		this.externalOntology = Optional.empty();
 	}
+	
+	public AnnotationEnricher(OWLOntology ontology, OWLOntology externalOntology) {
+		this(ontology);
+		this.externalOntology = Optional.ofNullable(externalOntology);
+	}
+	
+	public AnnotationEnricher(InputStream inputStream, OWLOntology externalOntology) throws OWLOntologyCreationException {
+		this(inputStream);
+		this.externalOntology = Optional.ofNullable(externalOntology);
+	}
+	
+	public AnnotationEnricher(File ontologyFile, OWLOntology externalOntology) throws OWLOntologyCreationException, FileNotFoundException {
+		this(new FileInputStream(ontologyFile), externalOntology);
+	}
+	
+	public AnnotationEnricher(IRI ontologyIRI, OWLOntology externalOntology) throws OWLOntologyCreationException {
+		this(ontologyIRI);
+		this.externalOntology = Optional.ofNullable(externalOntology);
+	}
+	
 	private float getProgressPerEntity() {
 		int totalEntities = 0;
 		totalEntities += ontology.getClassesInSignature().size();
@@ -154,10 +183,17 @@ public class AnnotationEnricher {
 		
 		
 		Set<OWLAxiom> axiomsToAdd = ConcurrentHashMap.newKeySet();
-		OWLOntologyManager externalOntologyManager = OWLManager.createOWLOntologyManager();
 		try {
-			OWLOntology externalOntologyPortion = externalOntologyManager.loadOntology(entity.getIRI());
-			externalOntologyPortion.getAnnotationAssertionAxioms(entity.getIRI()).stream().forEach(annotationAssertionAxiom -> {
+			OWLOntology externalData;
+			/* If an external ontology has been defined for enriching the current one, use it. Otherwise, try to load an ontology from the entity IRI. */
+			if (this.externalOntology.isPresent()) {
+				externalData = this.externalOntology.get();
+			} else {
+				OWLOntologyManager externalOntologyManager = OWLManager.createOWLOntologyManager();
+				externalData = externalOntologyManager.loadOntology(entity.getIRI());
+			}
+	
+			externalData.getAnnotationAssertionAxioms(entity.getIRI()).stream().forEach(annotationAssertionAxiom -> {
 				if (!this.ontology.containsAxiom(annotationAssertionAxiom)) {
 					axiomsToAdd.add(annotationAssertionAxiom);
 					/* If the annotation assertion axiom is using a new annotation property that do not exist in the ontology previously,
