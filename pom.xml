@@ -6,7 +6,7 @@
 
 	<groupId>es.um.dis.tecnomod</groupId>
 	<artifactId>readability-utils-protege-plugin</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.1</version>
 	<packaging>bundle</packaging>
 
 	<name>Readability Utils Protege Plugin</name>

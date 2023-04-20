@@ -22,7 +22,11 @@ This action tries to retrieve annotations assertion axioms for the selected enti
 
 ![import_annotations](assets/import_annotations.gif)
 
-A bulk version of this tool is available to enrich all the entities of the ontology; however, this can be a time-consuming task.
+Additionally, an external ontology can be specified to be used for extracting the annotation assertion axioms to enrich your local ontology. This is usefull when the IRI's you are reusing cannot be resolved by the plugin.
+
+![import_annotations_ext_ont](assets/import_annotations_ext_ont.gif)
+
+A bulk version of this tool is available to enrich all the entities of the ontology. It is recommended to specify an external ontology for enriching your ontology because the process will be much faster. Otherwise, an HTTP request will be thrown for each entity in your ontology to try to get its annotation assertion axioms, which can be a time-consuming task.
 
 
 ## Install

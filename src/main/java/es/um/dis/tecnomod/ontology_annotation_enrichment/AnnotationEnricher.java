@@ -171,8 +171,11 @@ public class AnnotationEnricher {
 	}
 	
 	public void enrichEntity(OWLEntity entity) {
+		this.notifyListeners(Math.round(this.progress), String.format("Enriching entity %s", entity.getIRI().toQuotedString()));
 		Set<OWLAxiom> annotationAssertionAxioms = this.getAnnotationAssertionAxiomsForOWLEntity(entity);
 		this.addAxiomsThreadSafe(ontologyManager, ontology, annotationAssertionAxioms);
+		this.progress = 100;
+		this.notifyListeners(Math.round(this.progress), null);
 	}
 	
 	public Set<OWLAxiom> getAnnotationAssertionAxiomsForOWLEntity(OWLEntity entity) {
@@ -180,8 +183,6 @@ public class AnnotationEnricher {
 	}
 	
 	private Set<OWLAxiom> getAnnotationAssertionAxiomsForOWLEntity(OWLEntity entity, Set<OWLAnnotationProperty> visitedAnnotationProperties) {
-		
-		
 		Set<OWLAxiom> axiomsToAdd = ConcurrentHashMap.newKeySet();
 		try {
 			OWLOntology externalData;

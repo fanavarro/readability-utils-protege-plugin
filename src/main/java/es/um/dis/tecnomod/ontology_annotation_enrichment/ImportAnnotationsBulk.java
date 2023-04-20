@@ -31,12 +31,6 @@ public class ImportAnnotationsBulk extends ProtegeOWLAction {
 	public void actionPerformed(ActionEvent event) {
 		OWLOntology owlOntology = this.getOWLWorkspace().getOWLModelManager().getActiveOntology();
 		createAndShowImportAnnotationsBulkWindow(owlOntology);
-//		javax.swing.SwingUtilities.invokeLater(new Runnable() {
-//            public void run() {
-//            	createAndShowImportAnnotationsWindow(owlOntology);
-//            }
-//        });
-		 
 	}
 	
 	private void createAndShowImportAnnotationsBulkWindow(OWLOntology owlOntology) {
