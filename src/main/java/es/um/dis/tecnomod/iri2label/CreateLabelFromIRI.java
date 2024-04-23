@@ -10,6 +10,8 @@ import org.semanticweb.owlapi.model.OWLOntology;
 
 public class CreateLabelFromIRI extends ProtegeOWLAction {
 
+	private static final String CREATE_LABEL = "Create label";
+
 	/**
 	 * 
 	 */
@@ -32,16 +34,22 @@ public class CreateLabelFromIRI extends ProtegeOWLAction {
 		OWLOntology owlOntology = this.getOWLWorkspace().getOWLModelManager().getActiveOntology();
 		OWLEntity owlEntity = this.getOWLWorkspace().getOWLSelectionModel().getSelectedEntity();
 		
-		String label = stringUtils.iri2string(owlEntity.getIRI());
+		String label = stringUtils.iri2string(owlEntity.getIRI()).trim();
 		String lang = null;
+		String message;
 		
-		
-		String message = String.format("The entity %s is going to be labelled as %s.", owlEntity.getIRI().toQuotedString(), label);
-		int result = JOptionPane.showConfirmDialog(getOWLWorkspace(), message, "Create label",
-	               JOptionPane.YES_NO_OPTION,
-	               JOptionPane.QUESTION_MESSAGE);
-		if(result == JOptionPane.YES_OPTION){
-			this.ontologyUtils.addRDFSLabel(owlOntology, owlEntity.getIRI(), label, lang);
-        }
+		if (label == null || label.isEmpty()) {
+			message = String.format("Label cannot be obtained because the entity IRI %s seems to be uncompliant with the NCName restrictions.", owlEntity.getIRI().toQuotedString());
+			JOptionPane.showMessageDialog(getOWLWorkspace(), message, CREATE_LABEL, JOptionPane.WARNING_MESSAGE);
+		}
+		else {
+			message = String.format("The entity %s is going to be labelled as %s.", owlEntity.getIRI().toQuotedString(), label);
+			int result = JOptionPane.showConfirmDialog(getOWLWorkspace(), message, CREATE_LABEL,
+		               JOptionPane.YES_NO_OPTION,
+		               JOptionPane.QUESTION_MESSAGE);
+			if(result == JOptionPane.YES_OPTION){
+				this.ontologyUtils.addRDFSLabel(owlOntology, owlEntity.getIRI(), label, lang);
+	        }
+		}
 	}
 }

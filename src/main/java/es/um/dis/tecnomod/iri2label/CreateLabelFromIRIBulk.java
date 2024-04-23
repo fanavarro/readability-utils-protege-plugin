@@ -49,8 +49,10 @@ public class CreateLabelFromIRIBulk extends ProtegeOWLAction {
 	private void addLabelsBulk(OWLOntology owlOntology) {
 		String lang = null;
 		for(OWLEntity owlEntity : getEntitiesWithoutLabel(owlOntology)) {
-			String label = this.stringUtils.iri2string(owlEntity.getIRI());
-			this.ontologyUtils.addRDFSLabel(owlOntology, owlEntity.getIRI(), label, lang);
+			String label = this.stringUtils.iri2string(owlEntity.getIRI()).trim();
+			if (label != null && !label.isEmpty()) {
+				this.ontologyUtils.addRDFSLabel(owlOntology, owlEntity.getIRI(), label, lang);
+			}
 		}
 	}
 
