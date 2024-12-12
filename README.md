@@ -30,7 +30,7 @@ A bulk version of this tool is available to enrich all the entities of the ontol
 
 
 ## Install
-In order to use the plugin from the last release, you can copy the jar file located [here](https://github.com/fanavarro/readability-utils-protege-plugin/releases/download/v1.0.0/readability-utils-protege-plugin-1.0.0.jar) into the plugin folder of your protege installation. After this, start protege and the functionality of the plugin should be visible under the *tool* section in the toolbar.
+In order to use the plugin from the last release, you can copy the jar file located [here](https://github.com/fanavarro/readability-utils-protege-plugin/releases/download/v1.0.2/readability-utils-protege-plugin-1.0.2.jar) into the plugin folder of your protege installation. After this, start protege and the functionality of the plugin should be visible under the *tool* section in the toolbar.
 
 
 ## Build
